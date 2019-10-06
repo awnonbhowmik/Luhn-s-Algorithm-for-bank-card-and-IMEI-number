@@ -1,55 +1,81 @@
 #include <iostream>
-#include <algorithm>
-#include <numeric>
+#include <numeric>			//for accumulate()
 #include <vector>
-
 using namespace std;
 
 int main() {
-	int n;
+	uint64_t n;
 	vector<int>a;
 
-	cout << "This program demonstrates Luhn's algorithm to check\n whether a card number or IMEI number is valid\n\n";
-	cout << "Enter card number:";
+	cout << "Enter the number:";
 	cin >> n;
 
-	//split the number into individual digits
 	while (n > 0) {
 		a.push_back(n % 10);
 		n /= 10;
 	}
 
-	if (a.size() != 16 || a.size() != 17) {
-		cout << "\nInvalid Card number";
+	if (a.size() == 15 || a.size() == 16)
+		cout << "\nCould be a IMEI or IMEISV number or credit card number\n";
+	else if (a.size() == 16 || a.size() == 17)
+		cout << "\nCould be a credit card number\n";
+	else {
+		cout << "Invalid CC or IMEI/IMEI-SV number";
 		return 0;
 	}
 
-	/*its in the reverse order, so reverse the vector and get the originnal order*/
+	for (auto x : a)
+		cout << x << " ";
+
+	//The vector contains the original number in reverse, so reversing it will correct the order
 	reverse(a.begin(), a.end());
 
-	/*start from the second rightmost digit, and double every second number moving towards the right, with starting number included*/
-	for (int i = a.size() - 1; i >= 0; i -= 2)
-		a[i] *= 2;
-
-	cout << "\nDoubled...\n";
+	cout << "\nThe original number split version looks like...\n";
 	for (auto x : a)
 		cout << x << " ";
 
-	for (int i = 0; i < a.size(); i++) {
-		int sum = 0;
-		while (a[i] > 0) {
-			sum += a[i] % 10;
-			a[i] /= 10;
-		}
-		a[i] = sum;
+	cout << "\n\n";
+	switch (a[0])
+	{
+	case 3:
+		cout << "\nPossibly a Travel/Entertainment card";
+		break;
+
+	case 4:
+		cout << "\nPossibly a Visa card";
+		break;
+
+	case 5:
+		cout << "\nPossibly a Master card";
+		break;
+
+	case 6:
+		cout << "\nPossibly a Discover card";
+		break;
+
+	default:
+		break;
 	}
 
-	cout << "\nSum double digit numbers...\n";
+	cout << "\n\n";
+	//Work from second rightmost number in the vector towards the left, doubling every other second number
+	for (int i = a.size() - 2; i >= 0; i -= 2)
+		a[i] *= 2;
+
+	cout << "\nAfter Doubling, original number split looks like...\n";
 	for (auto x : a)
 		cout << x << " ";
 
-	/*See if the sum of the new digits is divisible by 10. This is why
-	this method is also known as the (mod 10) method*/
-	cout << "\n" << (accumulate(a.begin(), a.end(), 0) % 10 ? "Valid" : "Invalid");
+	cout << "\nTurning the two digit numbers into single digit by adding the digits...\n";
+	for (unsigned int i = 0; i < a.size(); i++) {
+		if (a[i] > 9)
+			a[i] -= 9;
+	}
+
+	for (auto x : a)
+		cout << x << " ";
+
+	cout << "\n\nChecksum: " << (accumulate(a.begin(), a.end(), 0) % 10 == 0 ? "Valid" : "Invalid");
+
 	return 0;
 }
