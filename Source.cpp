@@ -19,6 +19,11 @@ int main() {
 		n /= 10;
 	}
 
+	if (a.size() != 16 || a.size() != 17) {
+		cout << "\nInvalid Card number";
+		return 0;
+	}
+
 	/*its in the reverse order, so reverse the vector and get the originnal order*/
 	reverse(a.begin(), a.end());
 
